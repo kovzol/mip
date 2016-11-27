@@ -1,6 +1,7 @@
 import argparse
 import logging
 import pexpect
+import os
 import sys
 import time
 
@@ -8,10 +9,13 @@ import time
 class GattTool:
     PROMPT = '.*\[LE\]>'
 
-    def __init__(self, interface, address):
+    def __init__(self, interface, address, logging=True):
         cmd = 'gatttool -i %s -b %s -I' % (interface, address)
         self.child = pexpect.spawn(cmd)
-        self.child.logfile = sys.stdout
+        if logging:
+            self.child.logfile = sys.stdout
+        else:
+            self.child.logfile = open(os.devnull, 'w')
         self.child.expect(self.PROMPT, timeout=1)
 
     def connect(self):
